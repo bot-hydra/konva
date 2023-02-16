@@ -5,7 +5,7 @@
 })(this, (function () { 'use strict';
 
   /*
-   * Konva JavaScript Framework v8.4.5
+   * Konva JavaScript Framework v8.4.6
    * http://konvajs.org/
    * Licensed under the MIT
    * Date: Thu Feb 16 2023
@@ -35,7 +35,7 @@
               : {};
   const Konva$2 = {
       _global: glob,
-      version: '8.4.5',
+      version: '8.4.6',
       isBrowser: detectBrowser(),
       isUnminified: /param/.test(function (param) { }.toString()),
       dblClickWindow: 400,
@@ -13586,7 +13586,7 @@
       }
       getHeight() {
           var { ascent, descent } = this.measureFontBoundingBox(this.text());
-          var autoHeight = (ascent + descent) * this.textArr.length - ((ascent - this.fontSize() + descent) * (this.textArr.length - 1));
+          var autoHeight = this.lineHeight() * (this.fontSize() + descent) * this.textArr.length - (this.fontSize() - ascent);
           var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
           return isAuto
               ? autoHeight
