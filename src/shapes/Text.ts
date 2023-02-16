@@ -194,8 +194,10 @@ export class Text extends Shape<TextConfig> {
     var translateY = 0;
     var translateY = lineHeightPx / 2;
 
+    var { descent } = this.measureFontBoundingBox(this.text())
+
     var lineTranslateX = 0;
-    var lineTranslateY = 0;
+    var lineTranslateY: number = descent;
 
     context.setAttr('font', this._getContextFont());
 
@@ -334,10 +336,13 @@ export class Text extends Shape<TextConfig> {
     return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
   }
   getHeight() {
+    var { ascent, descent } = this.measureFontBoundingBox(this.text())
+
+    var autoHeight = (ascent + descent) * this.textArr.length - ((ascent - this.fontSize() + descent) * (this.textArr.length - 1))
+
     var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
     return isAuto
-      ? this.fontSize() * this.textArr.length * this.lineHeight() +
-          this.padding() * 2
+      ? autoHeight
       : this.attrs.height;
   }
   /**
@@ -354,6 +359,30 @@ export class Text extends Shape<TextConfig> {
       'text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.'
     );
     return this.textHeight;
+  }
+
+  /**
+   * retrieve bounding box metrics of string with the font of current text shape.
+   * That method can't handle multiline text.
+   * @method
+   * @name Konva.Text#measureFontBoundingBox
+   * @param {String} [text] text to measure
+   * @returns {Object} { ascent , descent } of font of measured text
+   */
+  measureFontBoundingBox(text) {
+    var _context = getDummyContext(),
+      fontSize = this.fontSize(),
+      metrics;
+
+    _context.save();
+    _context.font = this._getContextFont();
+
+    metrics = _context.measureText(text);
+    _context.restore();
+    return {
+      ascent: metrics.fontBoundingBoxAscent,
+      descent: metrics.fontBoundingBoxDescent,
+    };
   }
 
   /**

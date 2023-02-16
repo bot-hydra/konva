@@ -5,10 +5,10 @@
 })(this, (function () { 'use strict';
 
   /*
-   * Konva JavaScript Framework v8.4.2
+   * Konva JavaScript Framework v8.4.3
    * http://konvajs.org/
    * Licensed under the MIT
-   * Date: Fri Jan 20 2023
+   * Date: Thu Feb 16 2023
    *
    * Original work Copyright (C) 2011 - 2013 by Eric Rowell (KineticJS)
    * Modified work Copyright (C) 2014 - present by Anton Lavrenov (Konva)
@@ -35,7 +35,7 @@
               : {};
   const Konva$2 = {
       _global: glob,
-      version: '8.4.2',
+      version: '8.4.3',
       isBrowser: detectBrowser(),
       isUnminified: /param/.test(function (param) { }.toString()),
       dblClickWindow: 400,
@@ -13470,8 +13470,9 @@
           var padding = this.padding(), fontSize = this.fontSize(), lineHeightPx = this.lineHeight() * fontSize, verticalAlign = this.verticalAlign(), alignY = 0, align = this.align(), totalWidth = this.getWidth(), letterSpacing = this.letterSpacing(), fill = this.fill(), textDecoration = this.textDecoration(), shouldUnderline = textDecoration.indexOf('underline') !== -1, shouldLineThrough = textDecoration.indexOf('line-through') !== -1, n;
           var translateY = 0;
           var translateY = lineHeightPx / 2;
+          var { descent } = this.measureFontBoundingBox(this.text());
           var lineTranslateX = 0;
-          var lineTranslateY = 0;
+          var lineTranslateY = descent;
           context.setAttr('font', this._getContextFont());
           context.setAttr('textBaseline', MIDDLE);
           context.setAttr('textAlign', LEFT);
@@ -13584,10 +13585,11 @@
           return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
       }
       getHeight() {
+          var { ascent, descent } = this.measureFontBoundingBox(this.text());
+          var autoHeight = (ascent + descent) * this.textArr.length - ((ascent - this.fontSize() + descent) * (this.textArr.length - 1));
           var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
           return isAuto
-              ? this.fontSize() * this.textArr.length * this.lineHeight() +
-                  this.padding() * 2
+              ? autoHeight
               : this.attrs.height;
       }
       /**
@@ -13602,6 +13604,25 @@
       getTextHeight() {
           Util.warn('text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.');
           return this.textHeight;
+      }
+      /**
+       * retrieve bounding box metrics of string with the font of current text shape.
+       * That method can't handle multiline text.
+       * @method
+       * @name Konva.Text#measureFontBoundingBox
+       * @param {String} [text] text to measure
+       * @returns {Object} { ascent , descent } of font of measured text
+       */
+      measureFontBoundingBox(text) {
+          var _context = getDummyContext(); this.fontSize(); var metrics;
+          _context.save();
+          _context.font = this._getContextFont();
+          metrics = _context.measureText(text);
+          _context.restore();
+          return {
+              ascent: metrics.fontBoundingBoxAscent,
+              descent: metrics.fontBoundingBoxDescent,
+          };
       }
       /**
        * measure string with the font of current text shape.
