@@ -194,10 +194,8 @@ export class Text extends Shape<TextConfig> {
     var translateY = 0;
     var translateY = lineHeightPx / 2;
 
-    var { descent } = this.measureFontBoundingBox(this.text())
-
     var lineTranslateX = 0;
-    var lineTranslateY: number = descent;
+    var lineTranslateY = 0;
 
     context.setAttr('font', this._getContextFont());
 
@@ -301,8 +299,10 @@ export class Text extends Shape<TextConfig> {
           lineTranslateX += this.measureSize(letter).width + letterSpacing;
         }
       } else {
+        var { descent } = this.measureActualBoundingBox(this.text())
+
         this._partialTextX = lineTranslateX;
-        this._partialTextY = translateY + lineTranslateY;
+        this._partialTextY = translateY + lineTranslateY + descent;
         this._partialText = text;
 
         context.fillStrokeShape(this);
@@ -362,6 +362,29 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
+   * retrieve actual bounding box metrics of string with the font of current text shape.
+   * That method can't handle multiline text.
+   * @method
+   * @name Konva.Text#measureActualBoundingBox
+   * @param {String} [text] text to measure
+   * @returns {Object} { ascent , descent } of font of measured text
+   */
+  measureActualBoundingBox(text) {
+    var _context = getDummyContext(),
+      metrics;
+
+    _context.save();
+    _context.font = this._getContextFont();
+
+    metrics = _context.measureText(text);
+    _context.restore();
+    return {
+      ascent: metrics.actualBoundingBoxAscent,
+      descent: metrics.actualBoundingBoxDescent,
+    };
+  }
+
+  /**
    * retrieve bounding box metrics of string with the font of current text shape.
    * That method can't handle multiline text.
    * @method
@@ -371,7 +394,6 @@ export class Text extends Shape<TextConfig> {
    */
   measureFontBoundingBox(text) {
     var _context = getDummyContext(),
-      fontSize = this.fontSize(),
       metrics;
 
     _context.save();
