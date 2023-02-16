@@ -1,5 +1,5 @@
 {
-  "name": "konva",
+  "name": "@bot-hydra/konva",
   "version": "8.4.2",
   "author": "Anton Lavrenov",
   "files": [
@@ -135,7 +135,7 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git://github.com/konvajs/konva.git"
+    "url": "https://github.com/bot-hydra/konva.git"
   },
   "license": "MIT"
 }

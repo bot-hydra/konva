@@ -61,3 +61,6 @@ dwsync.xml
 intermediate
 publish
 .idea
+
+# local .npmrc containing token
+.npmrc
