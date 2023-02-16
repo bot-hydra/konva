@@ -5,7 +5,7 @@
 })(this, (function () { 'use strict';
 
   /*
-   * Konva JavaScript Framework v8.4.4
+   * Konva JavaScript Framework v8.4.5
    * http://konvajs.org/
    * Licensed under the MIT
    * Date: Thu Feb 16 2023
@@ -35,7 +35,7 @@
               : {};
   const Konva$2 = {
       _global: glob,
-      version: '8.4.4',
+      version: '8.4.5',
       isBrowser: detectBrowser(),
       isUnminified: /param/.test(function (param) { }.toString()),
       dblClickWindow: 400,
@@ -13467,7 +13467,8 @@
           if (!this.text()) {
               return;
           }
-          var padding = this.padding(), fontSize = this.fontSize(), lineHeightPx = this.lineHeight() * fontSize, verticalAlign = this.verticalAlign(), alignY = 0, align = this.align(), totalWidth = this.getWidth(), letterSpacing = this.letterSpacing(), fill = this.fill(), textDecoration = this.textDecoration(), shouldUnderline = textDecoration.indexOf('underline') !== -1, shouldLineThrough = textDecoration.indexOf('line-through') !== -1, n;
+          var { descent } = this.measureFontBoundingBox(this.text());
+          var padding = this.padding(), fontSize = this.fontSize(), lineHeightPx = this.lineHeight() * (fontSize + descent), verticalAlign = this.verticalAlign(), alignY = 0, align = this.align(), totalWidth = this.getWidth(), letterSpacing = this.letterSpacing(), fill = this.fill(), textDecoration = this.textDecoration(), shouldUnderline = textDecoration.indexOf('underline') !== -1, shouldLineThrough = textDecoration.indexOf('line-through') !== -1, n;
           var translateY = 0;
           var translateY = lineHeightPx / 2;
           var lineTranslateX = 0;
@@ -13552,9 +13553,8 @@
                   }
               }
               else {
-                  var { descent } = this.measureActualBoundingBox(this.text());
                   this._partialTextX = lineTranslateX;
-                  this._partialTextY = translateY + lineTranslateY + descent;
+                  this._partialTextY = translateY + lineTranslateY;
                   this._partialText = text;
                   context.fillStrokeShape(this);
               }
@@ -13604,25 +13604,6 @@
       getTextHeight() {
           Util.warn('text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.');
           return this.textHeight;
-      }
-      /**
-       * retrieve actual bounding box metrics of string with the font of current text shape.
-       * That method can't handle multiline text.
-       * @method
-       * @name Konva.Text#measureActualBoundingBox
-       * @param {String} [text] text to measure
-       * @returns {Object} { ascent , descent } of font of measured text
-       */
-      measureActualBoundingBox(text) {
-          var _context = getDummyContext(), metrics;
-          _context.save();
-          _context.font = this._getContextFont();
-          metrics = _context.measureText(text);
-          _context.restore();
-          return {
-              ascent: metrics.actualBoundingBoxAscent,
-              descent: metrics.actualBoundingBoxDescent,
-          };
       }
       /**
        * retrieve bounding box metrics of string with the font of current text shape.
