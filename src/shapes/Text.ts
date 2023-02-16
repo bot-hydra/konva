@@ -336,9 +336,9 @@ export class Text extends Shape<TextConfig> {
     return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
   }
   getHeight() {
-    var { ascent, descent } = this.measureFontBoundingBox(this.text())
+    var { ascent, descent } = this.measureFontBoundingBox(this.text());
 
-    var autoHeight = (ascent + descent) * this.textArr.length - ((ascent - this.fontSize() + descent) * (this.textArr.length - 1))
+    var autoHeight = this.lineHeight() * (this.fontSize() + descent) * this.textArr.length - (this.fontSize() - ascent);
 
     var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
     return isAuto
